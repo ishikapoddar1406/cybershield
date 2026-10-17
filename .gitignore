@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment files & Secrets
+.env
+.env.local
+.env.*.local
+server/.env
+client/.env
+
+# Runtime Database & WAL files (seeded via npm run seed)
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+server/data/*.sqlite
+server/data/*.sqlite3
+!server/data/.gitkeep
+
+# Uploaded runtime evidence files (test samples remain in samples/)
+server/storage/evidence/*
+!server/storage/evidence/.gitkeep
+
+# Production builds
+dist/
+client/dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS and Editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

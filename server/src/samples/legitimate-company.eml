@@ -1,0 +1,29 @@
+Delivered-To: investigator1@cybershield.org
+Received: from mail-relay.cybershield.org (mail-relay.cybershield.org. [198.51.100.25])
+        by mx.cybershield.org with ESMTPS id c4912si819231
+        for <investigator1@cybershield.org>;
+        Sat, 17 Oct 2026 08:30:15 +0530
+Authentication-Results: mx.cybershield.org;
+       dkim=pass header.i=@cybershield.org header.s=202610;
+       spf=pass (cybershield.org: domain of notifications@cybershield.org designates 198.51.100.25 as permitted sender) smtp.mailfrom=notifications@cybershield.org;
+       dmarc=pass (p=REJECT dis=NONE) header.from=cybershield.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cybershield.org; s=202610;
+        h=from:to:subject:date:message-id:reply-to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=dGVzdF9ka2ltX3NpZ25hdHVyZV9mb3Jfc2VjdXJlX2N5YmVyc2hpZWxkX3BsYXRmb3JtX2FjYWRlbWljX3ZlcmlmaWNhdGlvbg==
+From: "CyberShield Forensics Platform" <notifications@cybershield.org>
+Reply-To: notifications@cybershield.org
+Return-Path: <notifications@cybershield.org>
+To: investigator1@cybershield.org
+Subject: Security Notice: Incident Case Assigned - CASE-2026-001
+Date: Sat, 17 Oct 2026 03:00:15 +0000
+Message-ID: <CS-NOTIF-20261017-001@cybershield.org>
+Content-Type: text/plain; charset=UTF-8
+
+Investigator,
+
+A new cybercrime incident CASE-2026-001 has been assigned to your queue for forensic examination.
+Please review the chain of custody and verify cryptographic evidence digests before commencing analysis.
+
+Platform Security Operations
+CyberShield Forensics Platform

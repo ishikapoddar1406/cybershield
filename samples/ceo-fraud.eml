@@ -1,0 +1,29 @@
+Delivered-To: finance-dept@enterprise.org
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com. [209.85.216.44])
+        by mx.corporate-gateway.com with ESMTPS id u891si21431201plb
+        for <finance-dept@enterprise.org>;
+        Fri, 16 Oct 2026 11:05:12 -0400 (EDT)
+Authentication-Results: mx.corporate-gateway.com;
+       dkim=pass header.i=@gmail.com;
+       spf=pass (google.com: domain of ceo.executive.wire@gmail.com designates 209.85.216.44 as permitted sender) smtp.mailfrom=ceo.executive.wire@gmail.com;
+       dmarc=pass header.from=gmail.com
+From: "Robert Sterling (Chief Executive Officer)" <ceo.executive.wire@gmail.com>
+Reply-To: offshore-escrow@quickwire-settle.top
+Return-Path: <ceo.executive.wire@gmail.com>
+To: finance-dept@enterprise.org
+Subject: Confidential: Time-sensitive corporate acquisition wire request
+Date: Fri, 16 Oct 2026 15:05:00 +0000
+Message-ID: <CAK9_J7=CEO-WIRE-TRANSAC=20261016@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+
+Team,
+
+I am currently in an NDA-restricted board meeting and cannot take calls.
+We are finalizing an urgent strategic acquisition that requires an immediate settlement wire of $84,500.
+Process this wire immediately to the escrow account details attached in my reply.
+
+Keep this strictly confidential.
+
+Robert Sterling
+Chief Executive Officer
+Enterprise Global Holdings

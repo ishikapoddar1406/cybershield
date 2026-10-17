@@ -1,0 +1,27 @@
+{
+  "name": "cybershield",
+  "version": "1.0.0",
+  "description": "CyberShield — Secure Cybercrime Investigation and Digital Forensics Platform",
+  "private": true,
+  "scripts": {
+    "dev": "node run-dev.js",
+    "start": "node server/src/server.js",
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client dev",
+    "build": "npm --prefix client run build",
+    "test": "npm --prefix server test",
+    "seed": "npm --prefix server run seed",
+    "install:all": "npm --prefix server install && npm --prefix client install"
+  },
+  "keywords": [
+    "cybersecurity",
+    "digital-forensics",
+    "incident-response",
+    "sha256",
+    "totp-mfa",
+    "rbac",
+    "sqlite"
+  ],
+  "author": "CyberShield Engineering Capstone Team",
+  "license": "ISC"
+}

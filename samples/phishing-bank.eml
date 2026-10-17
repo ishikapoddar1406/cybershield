@@ -1,0 +1,28 @@
+Delivered-To: victim-user@enterprise.org
+Received: by 2002:a05:6512:485:: with SMTP id z5csp12812499lfq;
+        Thu, 15 Oct 2026 09:12:33 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF750Qk8L7Vq1J7vYqF
+Received: from mail.spoofed-attacker-relay.net (mail.spoofed-attacker-relay.net. [198.51.100.99])
+        by mx.google.com with ESMTPS id o12-20020a170902c34c00b001d24c0d12
+        for <victim-user@enterprise.org>;
+        Thu, 15 Oct 2026 09:12:32 -0700 (PDT)
+Authentication-Results: mx.google.com;
+       dkim=fail header.i=@national-reserve-bank.com;
+       spf=fail (google.com: domain of bounces@bulk-spam-host.ru does not designate 198.51.100.99 as permitted sender) smtp.mailfrom=bounces@bulk-spam-host.ru;
+       dmarc=fail (p=REJECT sp=REJECT dis=NONE) header.from=national-reserve-bank.com
+From: "National Reserve Bank Security Alert" <alerts@national-reserve-bank.com>
+Reply-To: credential-collector@evil-server.net
+Return-Path: <bounces@bulk-spam-host.ru>
+To: victim-user@enterprise.org
+Subject: URGENT: Unauthorized account login detected - verify immediately
+Date: Thu, 15 Oct 2026 16:12:30 +0000
+Message-ID: <20261015161230.98412@national-reserve-bank.com>
+Content-Type: text/plain; charset=UTF-8
+
+Dear Customer,
+
+We detected an unauthorized transaction attempt on your account from IP address 45.33.21.11.
+If this was not you, click the security verification link immediately to lock your credentials:
+https://national-reserve-secure.xyz/verify-identity
+
+National Reserve Bank Fraud Prevention Division
