@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: cybershield-platform
+    env: node
+    plan: free
+    buildCommand: npm run install:all && npm run build
+    startCommand: node server/src/db/seed.js && node server/src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+      - key: STORAGE_DIR
+        value: ./storage/evidence
+      - key: DB_PATH
+        value: ./data/cybershield.db
