@@ -79,14 +79,12 @@
 
 ---
 
-### Scene 4: Forensics Tools — Network, Email, Device & Real Website Phishing Check (2:50 – 4:15)
+### Scene 4: Forensics Tools — Network & Email Header Analysis (2:50 – 3:45)
 
 - **On-Screen Action:**
-  - Click **"Forensics Tools"** in the sidebar. Show the 4 intuitive tabs:
+  - Click **"Forensics Tools"** in the sidebar. Show the 2 intuitive tabs:
     1. **Network Log Analysis**
     2. **Email Header Analysis**
-    3. **Device Fingerprinting**
-    4. **Real Website Phishing Check**
   - In **Network Log Analysis**:
     - Select the preset **"SSH & Login Repeated Attempts (Brute Force)"**.
     - Click **"Analyze Network Log"**.
@@ -95,26 +93,10 @@
     - Select the preset **"Bank Impersonation Phishing Email"**.
     - Click **"Analyze Email Headers"**.
     - Point out the clear phishing warning: the sender display name claims to be `accounts@hdfcbank.com`, but the actual `Reply-To` address goes to an untrusted domain `support@secure-update-verify.com`.
-  - Switch to the **Device Fingerprinting** tab:
-    - Show the privacy explanation and click **"Grant Permission & Check Device Details"**.
-    - Show the browser-reported screen size, language, and platform details.
-    - Click **"Erase Device Data"** to clear the display.
-  - Switch to the **Real Website Phishing Check** tab:
-    - Show the service configuration status badges (Google Safe Browsing v4 and VirusTotal v3) confirming that API keys are managed securely on the backend.
-    - Demonstrate the built-in quick test presets: click **"Google Test Threat (Malware Baseline)"** to populate `http://malware.testing.google.test/testing/malware/`.
-    - Check the mandatory **User Privacy & Investigation Consent** checkbox.
-    - Click **"Check Website"**. The backend queries the official Google Safe Browsing API.
-    - Show the distinct status banner: **"Known Threat Found"** with threat categories (MALWARE) and detection count.
-    - Point out the vital forensic disclaimer: *"A reputation check reflects known threat intelligence at query time. It is not conclusive mathematical proof that an unflagged URL is benign."*
-    - Click **"Clean Baseline (No Match Found)"** (`https://www.wikipedia.org/`) and run the check &rarr; show that the status is **"No Match Found"** and that the platform explicitly avoids claiming the site is "Definitely Safe".
-    - In the **"Attach Result to Investigation Case"** section, select an active incident from the dropdown and click **"Save to Case & Vault as Evidence"**.
-    - Show the confirmation notification: a timestamped investigation note is created, an evidence JSON artifact is stored, a SHA-256 digital fingerprint is recorded, and the chain of custody is updated.
 - **Presenter Spoken Narration:**
-  > *"Under Forensics Tools, we provide four practical analytical capabilities.*  
+  > *"Under Forensics Tools, we provide two practical analytical capabilities.*  
   > *First, Network Log Analysis checks recorded server activity for suspicious patterns like brute force logins or port scans without running dangerous live traffic.*  
-  > *Second, Email Header Analysis checks email routing and highlights deceptive sender addresses, which is the most common indicator in phishing investigations.*  
-  > *Third, Device Fingerprinting demonstrates how websites read browser-reported configuration details, strictly gated by user consent in accordance with data privacy principles.*  
-  > *Fourth, our Real Website Phishing Check connects to Google Safe Browsing and VirusTotal APIs. Notice that it never fetches the target page directly—preventing Server-Side Request Forgery—and requires investigator consent before submitting indicators. It produces distinct statuses: Known Threat Found, No Match Found, or Could Not Check. Crucially, a clean lookup is never labeled as 'definitely safe.' The investigator can directly vault the verified JSON report into the case evidence repository with a cryptographically computed SHA-256 fingerprint."*
+  > *Second, Email Header Analysis checks email routing and highlights deceptive sender addresses, which is the primary indicator in phishing investigations."*
 
 ---
 

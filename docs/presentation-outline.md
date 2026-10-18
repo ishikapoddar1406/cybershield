@@ -48,7 +48,7 @@
     1. *Dashboard:* Overview of incident counts, case status breakdown, and recent platform activity in plain English.
     2. *Incident Reports:* Fictional cybercrime reporting, search, filters, and investigator case notes.
     3. *Evidence & Hash Check:* SHA-256 digital fingerprinting, integrity checking, tamper simulation, and evidence history.
-    4. *Forensics Tools:* Tabbed analysis for Network Logs, Email Headers, Device Fingerprinting, and Real Website Phishing Check.
+    4. *Forensics Tools:* Tabbed analysis for Network Logs and Email Headers.
     5. *Security Features:* Five core live interactive demonstrations + faculty technical details.
     6. *Learning & Cyber Laws:* Indian IT Act 2000/2008, DPDP Act 2023, forensic checklists, and 30+ term glossary.
   - **Technology Stack:** React 19 + Vite, Node.js + Express 5, SQLite with WAL mode (`node:sqlite`).
@@ -85,8 +85,8 @@
 
 ---
 
-### Slide 7: Forensics Tools: Network, Email, Device & Real Website Phishing Check
-- **Slide Title:** Practical Forensic Analysis Tools & Real Threat Reputation
+### Slide 7: Forensics Tools: Network Logs & Email Header Analysis
+- **Slide Title:** Practical Forensic Analysis Tools
 - **Bullet Points:**
   - **Network Log Analysis Tab:**
     - Checks recorded server and firewall logs for suspicious patterns.
@@ -94,16 +94,7 @@
   - **Email Header Analysis Tab:**
     - Inspects RFC 5322 email headers and received hops.
     - Automatically flags phishing indicators where the sender display name masks a different reply-to address.
-  - **Device Fingerprinting Tab:**
-    - Educational demonstration showing browser-reported screen size, language, and platform details.
-    - Strictly gated behind explicit user consent to respect data privacy principles.
-  - **Real Website Phishing Check Tab:**
-    - Server-side integration with Google Safe Browsing Lookup API (v4) and VirusTotal API (v3).
-    - Clear distinction between "Known Threat Found", "No Match Found", and "Could Not Check".
-    - Rigorous SSRF defense (no arbitrary URL retrieval, blocks loopback/private RFC 1918 IPs) and consent gating.
-    - Offline URL structure heuristics (punycode, raw IP hosts, suspicious subdomains).
-    - One-click case evidence attachment: generates a verified JSON report in the Evidence Vault with an authentic SHA-256 fingerprint.
-- **Speaker Notes:** Reiterate that external lookups never fetch the website directly and require explicit investigator consent. Emphasize that "No Match Found" is never claimed as proof that a site is safe.
+- **Speaker Notes:** Reiterate that network and email forensic parsers operate offline without generating live hostile network traffic, safe for classroom and viva evaluation.
 
 ---
 

@@ -22,17 +22,15 @@
 1. **Dashboard:** Visual case statistics, investigation lifecycle progress, and recent platform activity.
 2. **Incident Reports:** Submit, search, filter, and update cybercrime reports with investigation notes.
 3. **Evidence & Hash Check:** Upload safe evidence, compute SHA-256 digital fingerprints, test tamper detection, and review handling history.
-4. **Forensics Tools (Merged Tabs):**
+4. **Forensics Tools:**
    - *Network Log Analysis:* Searches server logs for brute-force attacks, port scans, and high-volume floods.
    - *Email Header Analysis:* Traces email server hops and flags misleading sender display names.
-   - *Real Website Phishing Check:* Queries real threat intelligence feeds (Google Safe Browsing & VirusTotal) to check if a website address is flagged for phishing or malware, performs offline structural heuristics, and saves verified reputation reports directly into investigation cases with SHA-256 evidence digests.
-   - *Device Fingerprinting:* Educational demonstration of browser-reported details (requires explicit consent).
 5. **Security Features (Five Core Demonstrations):**
    - *1. Password Security:* Password complexity rules and Bcrypt cryptographic hashing.
    - *2. Extra Login Verification:* Genuine Time-Based One-Time Password (TOTP) two-factor authentication (Google/Microsoft Authenticator) with 4-step guided enrollment, AES-256-GCM secret encryption at rest, and replay attack prevention.
    - *3. Role-Based Permissions:* Server-side access control separating Reporters, Investigators, and Admins.
    - *4. Repeated Login Protection:* Rate limiting with click-by-click demonstration (Click 1 allowed, Click 2 allowed, Click 3 allowed, Click 4 blocked) and automatic 15-minute account lockout after 5 failures.
-   - *5. Safe Evidence Uploads:* Rejection of dangerous files (.exe) and SHA-256 alteration detection.
+   - *5. Safe Evidence Uploads & Malware Scanner:* Interactive file upload scanner with multi-layer detection (binary magic bytes, PE/ELF header disguise, EICAR/script heuristics, Shannon entropy, and SHA-256 digital fingerprinting).
 6. **Learning & Cyber Laws:** Study Indian cyber laws (IT Act 2000/2008, DPDP Act 2023), 7-phase forensic checklist, NIST incident response phases, and an interactive 30+ term glossary.
 
 ---
@@ -194,21 +192,16 @@ Follow this straightforward 10-step walkthrough to demonstrate the complete stud
    - Select the preset **"Bank Impersonation Phishing Email"**.
    - Click **"Analyze Email Headers"**.
    - Point out the clear phishing warning: the sender display name claims to be a trusted bank (`accounts@hdfcbank.com`), but the actual `Reply-To` address goes to an untrusted domain (`support@secure-update-verify.com`).
-8. **Check Real Website Phishing & Reputation:**
-   - In **"Forensics Tools"**, switch to the **"Real Website Phishing Check"** tab.
-   - Read the privacy & consent notice, check the consent box, and test a URL (e.g. click preset *Google Test Threat (Malware)* or *Suspicious URL Structure Example*).
-   - Click **"Check Website"**. Observe the distinct status (*Known Threat Found*, *No Match Found*, or *Could Not Check* if keys are not set in `.env`), the detection breakdown, and the separate offline heuristic pattern warnings.
-   - Click **"Save to Investigation Case"** to link the finding to your incident docket. This automatically creates a formal case note and generates a verifiable forensic evidence artifact with a SHA-256 fingerprint in **Evidence & Hash Check**.
-9. **Demonstrate Five Core Security Mechanisms:**
+8. **Demonstrate Five Core Security Mechanisms:**
    - Navigate to **"Security Features"**.
    - Walk through the five cards with live interactive tests:
      - **Mechanism 1 (Password Security):** Click "Test Password Strength" to show rules and bcrypt hashing.
      - **Mechanism 2 (Extra Login Verification / 2FA):** Click "Set Up Authenticator" &rarr; scan QR code with Google Authenticator (or copy fallback manual key) &rarr; enter 6-digit code &rarr; click "Verify and Enable MFA". Shows "Authenticator enabled successfully" with AES-256-GCM encryption and replay prevention. Then test logging out and logging in to show the secondary authenticator code requirement.
      - **Mechanism 3 (Role-Based Permissions):** Click "Test Role Permissions" to show that standard users cannot perform admin actions.
      - **Mechanism 4 (Protection Against Repeated Login Attempts):** Click the sequential button **"Send Request (Click 1 of 4)"** &rarr; allowed (200 OK), click **"Send Request (Click 2 of 4)"** &rarr; allowed (200 OK), click **"Send Request (Click 3 of 4)"** &rarr; allowed (200 OK). On the 4th click, the system blocks the request with HTTP 429 and displays a clear red alert *"Rate Limit Exceeded: Maximum allowed demo requests reached. Access is blocked."* Click **"Reset Counter"** to instantly reset the rate limiter for re-testing.
-     - **Mechanism 5 (Safe Evidence Uploads & Integrity Check):** Click "Test Dangerous File Block" to demonstrate rejection of `.exe` files.
+     - **Mechanism 5 (Safe Evidence Uploads & Malware Scanner):** Select or drag any file from your computer or click preset simulation tests (e.g. *Test Trojan Payload (.exe)*, *Test Disguised Header (.pdf with MZ)*, *Test Web Shell Script*, or *Test Safe Log*) &rarr; click "Scan & Check File Safety" to view the deep security report with magic bytes, entropy, SHA-256 digital fingerprint, and server ingestion status.
    - Note the optional *Technical Details for Faculty* expander on each card.
-10. **Open Learning & Cyber Laws:**
+9. **Open Learning & Cyber Laws:**
    - Navigate to **"Learning & Cyber Laws"**.
    - Review relevant provisions of the **Indian Information Technology Act, 2000** (Section 43, 65, 66, 66C, 66D), the **2008 Amendment**, and the **DPDP Act, 2023**.
    - Browse the 7-phase forensic evidence collection checklist and the 30+ term glossary.
