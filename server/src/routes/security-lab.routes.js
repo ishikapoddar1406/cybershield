@@ -1,12 +1,19 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
 const { getDatabase } = require('../db/database');
 const { recordAudit } = require('../middleware/audit');
 const { passwordPolicy } = require('../utils/validators');
+const { scanFileBuffer } = require('../utils/fileScanner');
 
 const router = express.Router();
+
+const scanUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 }
+});
 
 /**
  * Dedicated test rate limiter for the lab demo (3 requests per 30 seconds)
@@ -150,6 +157,56 @@ router.post('/test-file-upload-defense', requireAuth, (req, res) => {
       rejected: false,
       message: `File '${req.file.originalname}' passed allowlist checks and was safely processed without saving.`
     });
+  });
+});
+
+/**
+ * POST /api/security-lab/scan-file
+ * Analyzes an uploaded file for malware signatures, disguised PE headers,
+ * dangerous extensions, high entropy, and server policy compliance.
+ */
+router.post('/scan-file', requireAuth, (req, res) => {
+  scanUpload.single('file')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        error: `File upload error: ${err.message}`
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please choose or upload a file to analyze.'
+      });
+    }
+
+    try {
+      const scanReport = scanFileBuffer(req.file);
+
+      recordAudit(req, {
+        event_type: 'FILE_SECURITY_SCAN',
+        severity: scanReport.verdict === 'MALICIOUS' ? 'SECURITY_ALERT' : (scanReport.verdict === 'SUSPICIOUS' ? 'WARNING' : 'INFO'),
+        description: `File scanner inspected '${scanReport.filename}': Verdict=${scanReport.verdict} (Risk: ${scanReport.riskScore}%)`,
+        status: scanReport.verdict === 'MALICIOUS' ? 'DENIED' : 'SUCCESS',
+        details: {
+          filename: scanReport.filename,
+          verdict: scanReport.verdict,
+          riskScore: scanReport.riskScore,
+          sha256: scanReport.sha256
+        }
+      });
+
+      res.json({
+        success: true,
+        ...scanReport
+      });
+    } catch (scanErr) {
+      res.status(500).json({
+        success: false,
+        error: `Scan processing failed: ${scanErr.message}`
+      });
+    }
   });
 });
 

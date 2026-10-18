@@ -60,7 +60,9 @@ function verifyCsrf(req, res, next) {
     '/api/auth/login',
     '/api/auth/register',
     '/api/auth/verify-mfa',
-    '/api/security-lab/test-rate-limit'
+    '/api/security-lab/test-rate-limit',
+    '/api/security-lab/scan-file',
+    '/api/security-lab/test-file-upload-defense'
   ];
 
   if (exemptPaths.includes(req.path)) {

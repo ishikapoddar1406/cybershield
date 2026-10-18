@@ -4,10 +4,14 @@ import { apiRequest } from '../services/api';
 import {
   ShieldCheck,
   ShieldAlert,
+  ShieldX,
   Lock,
   KeyRound,
   UserCheck,
   FileCheck,
+  FileWarning,
+  UploadCloud,
+  FileText,
   AlertTriangle,
   CheckCircle2,
   ChevronDown,
@@ -254,6 +258,64 @@ export function SecurityFeaturesView() {
   // --- DEMONSTRATION 5: FILE UPLOAD SAFETY & SHA-256 ---
   const [uploadTestResult, setUploadTestResult] = useState(null);
   const [uploadLoading, setUploadLoading] = useState(false);
+
+  // User file scanner state (Malicious vs Safe Check)
+  const [userSelectedFile, setUserSelectedFile] = useState(null);
+  const [fileScanLoading, setFileScanLoading] = useState(false);
+  const [fileScanResult, setFileScanResult] = useState(null);
+  const [fileScanError, setFileScanError] = useState('');
+  const [copiedFingerprint, setCopiedFingerprint] = useState(false);
+
+  async function handleScanFile(fileToScan) {
+    const targetFile = fileToScan || userSelectedFile;
+    if (!targetFile) {
+      setFileScanError('Please choose or select a file to analyze.');
+      return;
+    }
+    setFileScanError('');
+    setFileScanLoading(true);
+    setFileScanResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', targetFile);
+
+      const res = await apiRequest('/api/security-lab/scan-file', {
+        method: 'POST',
+        body: formData
+      });
+      setFileScanResult(res);
+    } catch (err) {
+      setFileScanError(err.message || 'File security scan failed.');
+    } finally {
+      setFileScanLoading(false);
+    }
+  }
+
+  function handleQuickSampleScan(sampleType) {
+    let file;
+    if (sampleType === 'safe-log') {
+      const content = `2026-10-18T14:30:12.102Z [INFO] Auth service: User 'analyst1' logged in from 192.168.1.45\n2026-10-18T14:30:15.820Z [INFO] Evidence SHA-256 calculated: d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592\n2026-10-18T14:31:02.404Z [INFO] Hash verified successfully.`;
+      file = new File([content], 'incident_audit.log', { type: 'text/plain' });
+    } else if (sampleType === 'trojan-exe') {
+      const bytes = new Uint8Array([0x4D, 0x5A, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00]);
+      file = new File([bytes], 'backdoor_payload.exe', { type: 'application/x-msdownload' });
+    } else if (sampleType === 'disguised-pdf') {
+      const bytes = new Uint8Array([0x4D, 0x5A, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00, 0x54, 0x68, 0x69, 0x73, 0x20, 0x70, 0x72, 0x6F]);
+      file = new File([bytes], 'urgent_invoice_disguised.pdf', { type: 'application/pdf' });
+    } else if (sampleType === 'webshell') {
+      const content = `<?php\n// Malicious Web Shell Payload\nif(isset($_POST['cmd'])){\n  $cmd = base64_decode($_POST['cmd']);\n  eval($cmd);\n  system($cmd);\n}\n?>`;
+      file = new File([content], 'c99_webshell.php', { type: 'application/x-httpd-php' });
+    } else if (sampleType === 'eicar') {
+      const content = `X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*`;
+      file = new File([content], 'eicar_malware_test.com', { type: 'text/plain' });
+    }
+
+    if (file) {
+      setUserSelectedFile(file);
+      handleScanFile(file);
+    }
+  }
 
   async function handleTestMaliciousUpload() {
     setUploadLoading(true);
@@ -986,24 +1048,383 @@ export function SecurityFeaturesView() {
                   <FileCheck size={18} color="var(--accent-emerald)" />
                 </div>
                 <div>
-                  <h2 style={{ fontSize: '1rem', fontWeight: 600 }}>5. Safe File Uploads & Digital Fingerprint Checking</h2>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 600 }}>5. Safe File Uploads & Malware Security Scanner</h2>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    Blocks dangerous file types and uses SHA-256 digital fingerprints to detect if evidence has been changed.
+                    Deep file analysis: blocks dangerous executable scripts, detects camouflaged PE headers, and verifies SHA-256 integrity.
                   </div>
                 </div>
               </div>
-              <span className="badge badge-success">Enforced</span>
+              <span className="badge badge-success">Active Defense</span>
             </div>
 
             <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: 1.5 }}>
-              <strong>The Problem It Prevents:</strong> Attackers often try to upload dangerous files (like `.exe`, `.php`, or `.sh` scripts) to execute malicious code on the server. Furthermore, digital evidence in court requires proof that files have remained 100% unaltered since collection.
+              <strong>The Problem It Prevents:</strong> Attackers often try to upload dangerous files (like `.exe`, `.php`, or `.sh` scripts) or disguise executables behind document extensions to execute malicious code on the server. Furthermore, evidentiary integrity requires proof that files have remained unaltered since collection.
             </p>
 
-            <div style={{ background: '#0B1322', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '0.75rem' }}>
+            {/* Interactive File Scanner Box */}
+            <div style={{
+              background: '#0B1322',
+              padding: '1.25rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-subtle)',
+              marginBottom: '1rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <UploadCloud size={20} color="var(--accent-cyan)" />
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#F8FAFC' }}>
+                    Upload File to Inspect (Malicious vs Safe Check)
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  Max 25 MB • Deep binary header &amp; entropy analysis
+                </span>
+              </div>
+
+              {/* Upload Input Area */}
+              <div style={{
+                border: '2px dashed rgba(6, 182, 212, 0.3)',
+                borderRadius: '8px',
+                padding: '1.25rem',
+                textAlign: 'center',
+                background: 'rgba(4, 16, 26, 0.6)',
+                marginBottom: '1rem'
+              }}>
+                <input
+                  type="file"
+                  id="securityLabFileInput"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setUserSelectedFile(e.target.files[0]);
+                      setFileScanError('');
+                      setFileScanResult(null);
+                    }
+                  }}
+                />
+
+                <label
+                  htmlFor="securityLabFileInput"
+                  style={{
+                    display: 'inline-flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: 'rgba(6, 182, 212, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--accent-cyan)'
+                  }}>
+                    <UploadCloud size={24} />
+                  </div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#F8FAFC' }}>
+                    {userSelectedFile ? userSelectedFile.name : 'Click to select a file from your computer'}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    {userSelectedFile
+                      ? `${(userSelectedFile.size / 1024).toFixed(1)} KB • Click "Scan & Check File" below`
+                      : 'Supports all document, log, image, archive, script, and executable file formats'}
+                  </div>
+                </label>
+
+                {userSelectedFile && (
+                  <div style={{ marginTop: '0.85rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                    <button
+                      onClick={() => handleScanFile()}
+                      disabled={fileScanLoading}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.825rem', padding: '0.45rem 1.1rem' }}
+                    >
+                      {fileScanLoading ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <RefreshCw size={14} className="spin" /> Scanning File...
+                        </span>
+                      ) : (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <FileCheck size={15} /> Scan &amp; Check File Safety
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setUserSelectedFile(null);
+                        setFileScanResult(null);
+                        setFileScanError('');
+                      }}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.8rem' }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Sample Presets */}
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
+                  Or run an instant simulation test:
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <button
+                    onClick={() => handleQuickSampleScan('safe-log')}
+                    disabled={fileScanLoading}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                  >
+                    🟢 Test Safe Log (.log)
+                  </button>
+                  <button
+                    onClick={() => handleQuickSampleScan('trojan-exe')}
+                    disabled={fileScanLoading}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: '#FDA4AF' }}
+                  >
+                    🔴 Test Trojan Payload (.exe)
+                  </button>
+                  <button
+                    onClick={() => handleQuickSampleScan('disguised-pdf')}
+                    disabled={fileScanLoading}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: '#FCD34D' }}
+                  >
+                    🟡 Test Disguised Header (.pdf with MZ)
+                  </button>
+                  <button
+                    onClick={() => handleQuickSampleScan('webshell')}
+                    disabled={fileScanLoading}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: '#FDA4AF' }}
+                  >
+                    🔴 Test Web Shell Script (.php)
+                  </button>
+                  <button
+                    onClick={() => handleQuickSampleScan('eicar')}
+                    disabled={fileScanLoading}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: '#FDA4AF' }}
+                  >
+                    🔴 Test EICAR Benchmark
+                  </button>
+                </div>
+              </div>
+
+              {fileScanError && (
+                <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.8rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '4px', color: '#FDA4AF', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <AlertTriangle size={15} />
+                  <span>{fileScanError}</span>
+                </div>
+              )}
+
+              {/* SCAN REPORT DISPLAY */}
+              {fileScanResult && (
+                <div style={{
+                  marginTop: '1.25rem',
+                  padding: '1rem',
+                  borderRadius: '6px',
+                  background: fileScanResult.verdict === 'MALICIOUS'
+                    ? 'rgba(239, 68, 68, 0.08)'
+                    : fileScanResult.verdict === 'SUSPICIOUS'
+                      ? 'rgba(245, 158, 11, 0.08)'
+                      : 'rgba(16, 185, 129, 0.08)',
+                  border: `1px solid ${
+                    fileScanResult.verdict === 'MALICIOUS'
+                      ? 'rgba(239, 68, 68, 0.35)'
+                      : fileScanResult.verdict === 'SUSPICIOUS'
+                        ? 'rgba(245, 158, 11, 0.35)'
+                        : 'rgba(16, 185, 129, 0.35)'
+                  }`
+                }}>
+                  {/* Top Verdict Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      {fileScanResult.verdict === 'MALICIOUS' ? (
+                        <ShieldX size={26} color="#EF4444" />
+                      ) : fileScanResult.verdict === 'SUSPICIOUS' ? (
+                        <AlertTriangle size={26} color="#F59E0B" />
+                      ) : (
+                        <ShieldCheck size={26} color="#10B981" />
+                      )}
+                      <div>
+                        <div style={{
+                          fontSize: '1rem',
+                          fontWeight: 700,
+                          color: fileScanResult.verdict === 'MALICIOUS'
+                            ? '#EF4444'
+                            : fileScanResult.verdict === 'SUSPICIOUS'
+                              ? '#F59E0B'
+                              : '#10B981'
+                        }}>
+                          {fileScanResult.verdict === 'MALICIOUS'
+                            ? 'MALICIOUS FILE DETECTED'
+                            : fileScanResult.verdict === 'SUSPICIOUS'
+                              ? 'SUSPICIOUS FILE (REVIEW REQUIRED)'
+                              : 'SAFE & VERIFIED EVIDENCE FILE'}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          File: <strong>{fileScanResult.filename}</strong> ({fileScanResult.fileSize})
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <span className={`badge ${
+                        fileScanResult.verdict === 'MALICIOUS'
+                          ? 'badge-danger'
+                          : fileScanResult.verdict === 'SUSPICIOUS'
+                            ? 'badge-warning'
+                            : 'badge-success'
+                      }`} style={{ fontSize: '0.75rem' }}>
+                        Risk Score: {fileScanResult.riskScore}/100
+                      </span>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                        Server Ingestion: <strong style={{ color: fileScanResult.allowedByServerFilter ? '#10B981' : '#EF4444' }}>
+                          {fileScanResult.allowedByServerFilter ? 'ACCEPTED' : 'BLOCKED'}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recommendation banner */}
+                  <div style={{
+                    padding: '0.6rem 0.8rem',
+                    background: 'rgba(0, 0, 0, 0.25)',
+                    borderRadius: '4px',
+                    fontSize: '0.78rem',
+                    color: '#F8FAFC',
+                    marginBottom: '0.85rem'
+                  }}>
+                    <strong>Security Assessment:</strong> {fileScanResult.recommendation}
+                  </div>
+
+                  {/* Metrics Grid */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                    gap: '0.6rem',
+                    marginBottom: '0.85rem'
+                  }}>
+                    <div style={{ background: '#070C15', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontSize: '0.75rem' }}>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Extension &amp; MIME:</span>
+                      <span style={{ color: '#F8FAFC', fontFamily: 'JetBrains Mono, monospace' }}>
+                        {fileScanResult.extension} • {fileScanResult.mimetype}
+                      </span>
+                    </div>
+
+                    <div style={{ background: '#070C15', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontSize: '0.75rem' }}>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Magic Bytes Signature:</span>
+                      <span style={{ color: '#F8FAFC', fontFamily: 'JetBrains Mono, monospace' }}>
+                        {fileScanResult.magicBytesHex} ({fileScanResult.magicBytesAscii})
+                      </span>
+                    </div>
+
+                    <div style={{ background: '#070C15', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontSize: '0.75rem' }}>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Shannon Entropy:</span>
+                      <span style={{ color: '#F8FAFC', fontFamily: 'JetBrains Mono, monospace' }}>
+                        {fileScanResult.entropy} / 8.0 • {fileScanResult.entropyLevel}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* SHA-256 Fingerprint */}
+                  <div style={{
+                    background: '#070C15',
+                    padding: '0.6rem 0.8rem',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border-subtle)',
+                    fontSize: '0.75rem',
+                    marginBottom: '0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.4rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0, overflow: 'hidden' }}>
+                      <span style={{ color: 'var(--text-muted)', flexShrink: 0 }}>SHA-256:</span>
+                      <span style={{ color: 'var(--accent-cyan)', fontFamily: 'JetBrains Mono, monospace', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                        {fileScanResult.sha256}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(fileScanResult.sha256);
+                        setCopiedFingerprint(true);
+                        setTimeout(() => setCopiedFingerprint(false), 2000);
+                      }}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                    >
+                      {copiedFingerprint ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
+                      <span>{copiedFingerprint ? 'Copied' : 'Copy Hash'}</span>
+                    </button>
+                  </div>
+
+                  {/* Findings Breakdown */}
+                  {fileScanResult.findings && fileScanResult.findings.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Inspection Findings &amp; Heuristics:
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                        {fileScanResult.findings.map((f, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              padding: '0.45rem 0.65rem',
+                              borderRadius: '4px',
+                              background: '#070C15',
+                              border: `1px solid ${
+                                f.status === 'FAIL'
+                                  ? 'rgba(239, 68, 68, 0.3)'
+                                  : f.status === 'WARN'
+                                    ? 'rgba(245, 158, 11, 0.3)'
+                                    : 'rgba(16, 185, 129, 0.3)'
+                              }`,
+                              fontSize: '0.75rem',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '0.5rem'
+                            }}
+                          >
+                            <span style={{
+                              fontWeight: 700,
+                              fontSize: '0.65rem',
+                              padding: '0.1rem 0.35rem',
+                              borderRadius: '3px',
+                              background: f.status === 'FAIL' ? '#EF4444' : (f.status === 'WARN' ? '#F59E0B' : '#10B981'),
+                              color: '#04101A',
+                              marginTop: '0.1rem'
+                            }}>
+                              {f.status}
+                            </span>
+                            <div style={{ flex: 1 }}>
+                              <strong style={{ color: '#F8FAFC' }}>{f.title}: </strong>
+                              <span style={{ color: 'var(--text-secondary)' }}>{f.detail}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Existing Quick Simulated Test */}
+            <div style={{ background: '#0B1322', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
                   <div style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                    Test File Upload Protection:
+                    Server Upload Filter Simulation:
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     Attempts to upload a test executable file (`trojan_sample.exe`) to verify that the server rejects dangerous file types.
@@ -1043,6 +1464,7 @@ export function SecurityFeaturesView() {
               {expandedTech['upload'] && (
                 <div style={{ marginTop: '0.5rem', padding: '0.75rem', background: '#090D16', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'JetBrains Mono, monospace' }}>
                   • Upload Filter: Multer with strict MIME and extension allowlist (`server/src/middleware/upload.js`)<br />
+                  • Scanner: Binary magic byte extraction (PE/ELF/PDF/PNG), Shannon entropy detection, and EICAR/Web shell heuristics (`server/src/utils/fileScanner.js`)<br />
                   • Permitted formats: `.txt`, `.log`, `.csv`, `.eml`, `.pdf`, `.png`, `.jpg`, `.pcap`<br />
                   • Storage: Random UUID identifier outside public web directory to prevent direct execution
                 </div>

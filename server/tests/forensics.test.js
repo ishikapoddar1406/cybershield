@@ -130,35 +130,4 @@ Please reset your password immediately.`;
     expect(anomalyIds).toContain('ANOMALY-RETURN-PATH');
     expect(anomalyIds).toContain('ANOMALY-AUTH-FAILURE');
   });
-
-  it('Digital Fingerprinting Lab: Strictly requires explicit user consent', async () => {
-    // 1. Without consent -> 403 Forbidden
-    const noConsentRes = await request(app)
-      .post('/api/forensics/fingerprint/generate')
-      .send({ consentGiven: false });
-    expect(noConsentRes.status).toBe(403);
-    expect(noConsentRes.body.error).toContain('Consent Required');
-
-    // 2. With consent -> 200 OK with demonstration SHA-256 hash
-    const consentRes = await request(app)
-      .post('/api/forensics/fingerprint/generate')
-      .send({
-        consentGiven: true,
-        clientData: {
-          userAgent: 'Mozilla/5.0 TestBrowser/1.0',
-          platform: 'Win32',
-          language: 'en-US',
-          screenResolution: '1920x1080',
-          colorDepth: 24,
-          timezone: 'Asia/Kolkata',
-          hardwareConcurrency: 8,
-          canvasHash: 'test_canvas_digest'
-        }
-      });
-
-    expect(consentRes.status).toBe(200);
-    expect(consentRes.body.success).toBe(true);
-    expect(consentRes.body.demonstrationHash).toBeDefined();
-    expect(consentRes.body.educationalInsights).toBeDefined();
-  });
 });

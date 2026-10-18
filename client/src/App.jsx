@@ -74,7 +74,7 @@ export default function App() {
   let resolvedTab = activeTab;
   if (['security-lab', 'account-security'].includes(activeTab)) {
     resolvedTab = 'security';
-  } else if (['network-lab', 'email-lab', 'fingerprinting'].includes(activeTab)) {
+  } else if (['network-lab', 'email-lab'].includes(activeTab)) {
     resolvedTab = 'forensics';
   } else if (['cyber-laws', 'investigation-hub'].includes(activeTab)) {
     resolvedTab = 'learning';
