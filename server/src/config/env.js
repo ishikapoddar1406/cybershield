@@ -11,7 +11,5 @@ module.exports = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
   STORAGE_DIR: path.resolve(__dirname, '../../', process.env.STORAGE_DIR || './storage/evidence'),
   DB_PATH: path.resolve(__dirname, '../../', process.env.DB_PATH || './data/cybershield.db'),
-  IS_PROD: process.env.NODE_ENV === 'production',
-  GOOGLE_SAFE_BROWSING_API_KEY: process.env.GOOGLE_SAFE_BROWSING_API_KEY || '',
-  VIRUSTOTAL_API_KEY: process.env.VIRUSTOTAL_API_KEY || ''
+  IS_PROD: process.env.NODE_ENV === 'production'
 };
